@@ -1,0 +1,27 @@
+<%- if @push_event.passed_audit? -%>
+  <h3>Audit Passed</h3>
+<%- else -%>
+  <h3>Audit Failed</h3>
+  <%- unless @push_event.unapproved_commits.empty? -%>
+    <h4>The following commits failed a Gitlab audit:</h4>
+    <dl>
+    <%- @push_event.unapproved_commits.each do |commit| -%>
+      <dt><%= link_to commit.sha, "#{@push_event.project_base_path}/commit/#{commit.sha}" %></dt>
+      <dd><%= commit.message %></dd>
+    <%- end -%>
+    </dl>
+  <%- end -%>
+
+  <%- if @push_event.too_many_commits? then -%>
+    <h4>More than 20 commits pushed.  Please verify <em>all</em> commits between the following commits:</h4>
+    <dl>
+      <dt>Before</dt><dd><%= link_to @push_event.before, "#{@push_event.project_base_path}/commit/#{@push_event.before}" %></dd>
+      <dt>After</dt><dd><%= link_to @push_event.after, "#{@push_event.project_base_path}/commit/#{@push_event.after}" %></dd>
+    </dl>
+  <%- end -%>
+
+  <%- if @issue_url -%>
+    Created issue to track <%= link_to "here", @issue_url %>.
+  <%- end -%>
+<%- end -%>
+

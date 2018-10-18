@@ -1,0 +1,16 @@
+<%- unless @push_event.unapproved_commits.empty? -%>
+#### The following commits failed a Gitlab audit:
+  <%- @push_event.unapproved_commits.each do |commit| -%>
+* [<%= commit.sha %>](<%= "#{@push_event.project_base_path}/commit/#{commit.sha}" %>) <%= commit.message %>
+  <%- end -%>
+<%- end -%>
+
+<%- if @push_event.too_many_commits? then -%>
+#### More than 20 commits pushed.  Please verify _all_ commits between the following commits:
+* Before: [<%= @push_event.before %>](<%= "#{@push_event.project_base_path}/commit/#{@push_event.before}" %>)
+* After: [<%= @push_event.after %>](<%= "#{@push_event.project_base_path}/commit/#{@push_event.after}" %>)
+<%- end -%>
+
+<%- if @issue_url then -%>
+Created issue to track [here](<%= @issue_url %>).
+<%- end -%>
